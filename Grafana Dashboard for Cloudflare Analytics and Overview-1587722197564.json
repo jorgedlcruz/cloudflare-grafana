@@ -69,6 +69,23 @@
   "panels": [
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -78,31 +95,19 @@
       "id": 4,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "targets": [
         {
           "groupBy": [
@@ -138,7 +143,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "timeFrom": null,
@@ -148,6 +159,24 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -157,32 +186,19 @@
       "id": 5,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "targets": [
         {
           "groupBy": [
@@ -218,7 +234,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "timeFrom": null,
@@ -228,6 +250,23 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -237,31 +276,19 @@
       "id": 6,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "targets": [
         {
           "groupBy": [
@@ -297,7 +324,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "timeFrom": null,
@@ -307,6 +340,24 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -316,32 +367,19 @@
       "id": 7,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "targets": [
         {
           "groupBy": [
@@ -377,7 +415,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "timeFrom": null,
@@ -387,6 +431,31 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 5
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -396,39 +465,19 @@
       "id": 13,
       "options": {
         "colorMode": "background",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                },
-                {
-                  "color": "#EAB839",
-                  "value": 5
-                },
-                {
-                  "color": "semi-dark-red",
-                  "value": 10
-                }
-              ]
-            },
-            "unit": "short"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "targets": [
         {
           "groupBy": [
@@ -464,7 +513,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "timeFrom": null,
@@ -474,6 +529,23 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -483,31 +555,19 @@
       "id": 14,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "targets": [
         {
           "groupBy": [
@@ -543,7 +603,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "timeFrom": null,
@@ -555,15 +621,24 @@
       "circleMaxSize": "20",
       "circleMinSize": "1",
       "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
+        "#B877D9",
+        "#5794F2",
+        "#73BF69",
+        "#FADE2A",
+        "#FF9830",
+        "#F2495C"
       ],
       "datasource": "${DS_INFLUXDB}",
       "decimals": 0,
       "esMetric": "Count",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "gridPos": {
-        "h": 20,
+        "h": 17,
         "w": 12,
         "x": 0,
         "y": 4
@@ -578,7 +653,6 @@
       "mapCenterLongitude": 14,
       "maxDataPoints": 1,
       "mouseWheelZoom": true,
-      "options": {},
       "showLegend": true,
       "stickyLabels": false,
       "tableQueryOptions": {
@@ -630,10 +704,16 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
-      "thresholds": "0,100",
+      "thresholds": "0,100,1000,10000,100000",
       "timeFrom": null,
       "timeShift": null,
       "title": "Countries Traffic Map",
@@ -644,296 +724,53 @@
       "valueName": "current"
     },
     {
-      "datasource": "${DS_INFLUXDB}",
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 12,
-        "y": 4
-      },
-      "id": 15,
-      "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
-      },
-      "pluginVersion": "6.6.2",
-      "targets": [
-        {
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "cloudflare_analytics",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "cfRequestsAll"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": []
-        }
+      "circleMaxSize": "20",
+      "circleMinSize": "1",
+      "colors": [
+        "#B877D9",
+        "#5794F2",
+        "#73BF69",
+        "#FADE2A",
+        "#FF9830",
+        "#F2495C"
       ],
-      "timeFrom": "24h",
-      "timeShift": null,
-      "title": "Total Requests",
-      "type": "stat"
-    },
-    {
       "datasource": "${DS_INFLUXDB}",
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 16,
-        "y": 4
-      },
-      "id": 16,
-      "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
+      "decimals": 0,
+      "esMetric": "Count",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "overrides": []
       },
-      "pluginVersion": "6.6.2",
-      "targets": [
-        {
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "cloudflare_analytics",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "cfRequestsCached"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "timeFrom": "24h",
-      "timeShift": null,
-      "title": "Cached Requests",
-      "type": "stat"
-    },
-    {
-      "datasource": "${DS_INFLUXDB}",
       "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 20,
-        "y": 4
-      },
-      "id": 17,
-      "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
-      },
-      "pluginVersion": "6.6.2",
-      "targets": [
-        {
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "cloudflare_analytics",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "cfRequestsUncached"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "timeFrom": "24h",
-      "timeShift": null,
-      "title": "Uncached Requests",
-      "type": "stat"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "cacheTimeout": null,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_INFLUXDB}",
-      "fill": 8,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 5,
+        "h": 17,
         "w": 12,
         "x": 12,
-        "y": 7
+        "y": 4
       },
-      "hiddenSeries": false,
-      "id": 8,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
+      "hideEmpty": true,
+      "hideZero": true,
+      "id": 21,
+      "initialZoom": "2",
+      "locationData": "countries",
+      "mapCenter": "Europe",
+      "mapCenterLatitude": 46,
+      "mapCenterLongitude": 14,
+      "maxDataPoints": 1,
+      "mouseWheelZoom": true,
+      "showLegend": true,
+      "stickyLabels": false,
+      "tableQueryOptions": {
+        "geohashField": "geohash",
+        "latitudeField": "latitude",
+        "longitudeField": "longitude",
+        "metricField": "metric",
+        "queryType": "geohash"
       },
-      "lines": true,
-      "linewidth": 0,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pluginVersion": "6.6.2",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "alias": "Cached Requests",
-          "color": "#1f77b4"
-        },
-        {
-          "alias": "Uncached Requests",
-          "color": "#aec7e8"
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "alias": "Cached Requests",
+          "alias": "$tag_country",
           "groupBy": [
             {
               "params": [
@@ -943,164 +780,97 @@
             },
             {
               "params": [
-                "previous"
+                "country"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "none"
               ],
               "type": "fill"
             }
           ],
-          "measurement": "cloudflare_analytics",
+          "measurement": "cloudflare_analytics_country",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"visits\") FROM \"cloudflare_analytics_country\" WHERE $timeFilter GROUP BY time($__interval), \"country\" fill(none)",
-          "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "cfRequestsCached"
+                  "threats"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
                 "type": "last"
-              },
-              {
-                "params": [
-                  "Cached Requests"
-                ],
-                "type": "alias"
               }
             ]
           ],
-          "tags": []
-        },
-        {
-          "alias": "Uncached Requests",
-          "groupBy": [
+          "tags": [
             {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "previous"
-              ],
-              "type": "fill"
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
             }
-          ],
-          "measurement": "cloudflare_analytics",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT last(\"visits\") FROM \"cloudflare_analytics_country\" WHERE $timeFilter GROUP BY time($__interval), \"country\" fill(none)",
-          "rawQuery": false,
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "cfRequestsUncached"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              },
-              {
-                "params": [
-                  "Uncached Requests"
-                ],
-                "type": "alias"
-              }
-            ]
-          ],
-          "tags": []
+          ]
         }
       ],
-      "thresholds": [],
+      "thresholds": "0,100,1000,10000,100000",
       "timeFrom": null,
-      "timeRegions": [],
       "timeShift": null,
-      "title": "Requests Through Cloudflare",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "Countries Threat Map",
+      "type": "grafana-worldmap-panel",
+      "unitPlural": "",
+      "unitSingle": "",
+      "unitSingular": "",
+      "valueName": "current"
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 12,
-        "y": 12
+        "x": 0,
+        "y": 21
       },
       "id": 18,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "targets": [
         {
           "groupBy": [
@@ -1136,7 +906,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "timeFrom": "24h",
@@ -1146,41 +922,46 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 16,
-        "y": 12
+        "x": 4,
+        "y": 21
       },
       "id": 19,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "targets": [
         {
           "groupBy": [
@@ -1216,7 +997,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "timeFrom": "24h",
@@ -1226,41 +1013,46 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 20,
-        "y": 12
+        "x": 8,
+        "y": 21
       },
       "id": 20,
       "options": {
         "colorMode": "value",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "targets": [
         {
           "groupBy": [
@@ -1296,12 +1088,288 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "timeFrom": "24h",
       "timeShift": null,
       "title": "Cached Bandwidth",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 12,
+        "y": 21
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.5",
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "cloudflare_analytics",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "cfRequestsAll"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
+        }
+      ],
+      "timeFrom": "24h",
+      "timeShift": null,
+      "title": "Total Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 16,
+        "y": 21
+      },
+      "id": 16,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.5",
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "cloudflare_analytics",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "cfRequestsCached"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
+        }
+      ],
+      "timeFrom": "24h",
+      "timeShift": null,
+      "title": "Cached Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 20,
+        "y": 21
+      },
+      "id": 17,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.5",
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "cloudflare_analytics",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "cfRequestsUncached"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
+        }
+      ],
+      "timeFrom": "24h",
+      "timeShift": null,
+      "title": "Uncached Requests",
       "type": "stat"
     },
     {
@@ -1311,13 +1379,20 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 8,
       "fillGradient": 0,
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 12,
-        "x": 12,
-        "y": 15
+        "x": 0,
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 9,
@@ -1335,10 +1410,10 @@
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.3.5",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1399,7 +1474,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         },
         {
           "alias": "Uncached Bandwidth",
@@ -1444,7 +1525,13 @@
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
         }
       ],
       "thresholds": [],
@@ -1489,19 +1576,66 @@
       }
     },
     {
-      "content": "<a href=\"https://www.jorgedelacruz.es\"><img src=\"https://www.jorgedelacruz.es/wp-content/uploads/2019/04/jorgedelacruz-banner_2efede4ef704c939e63a3763231f5961.png\"></a>\n\n\n\n",
+      "aliasColors": {},
+      "bars": false,
+      "cacheTimeout": null,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": "${DS_INFLUXDB}",
-      "gridPos": {
-        "h": 3,
-        "w": 5,
-        "x": 19,
-        "y": 21
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
       },
-      "id": 22,
-      "mode": "html",
-      "options": {},
+      "fill": 8,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 0,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "Cached Requests",
+          "color": "#1f77b4"
+        },
+        {
+          "alias": "Uncached Requests",
+          "color": "#aec7e8"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
+          "alias": "Cached Requests",
           "groupBy": [
             {
               "params": [
@@ -1511,47 +1645,176 @@
             },
             {
               "params": [
-                "null"
+                "previous"
               ],
               "type": "fill"
             }
           ],
+          "measurement": "cloudflare_analytics",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "SELECT last(\"visits\") FROM \"cloudflare_analytics_country\" WHERE $timeFilter GROUP BY time($__interval), \"country\" fill(none)",
+          "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "value"
+                  "cfRequestsCached"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
-                "type": "mean"
+                "type": "last"
+              },
+              {
+                "params": [
+                  "Cached Requests"
+                ],
+                "type": "alias"
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone$/"
+            }
+          ]
+        },
+        {
+          "alias": "Uncached Requests",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "previous"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "cloudflare_analytics",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT last(\"visits\") FROM \"cloudflare_analytics_country\" WHERE $timeFilter GROUP BY time($__interval), \"country\" fill(none)",
+          "rawQuery": false,
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "cfRequestsUncached"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [
+                  "Uncached Requests"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "cfZone",
+              "operator": "=~",
+              "value": "/^$zone_id$/"
+            }
+          ]
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "",
-      "transparent": true,
-      "type": "text"
+      "title": "Requests Through Cloudflare",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
-  "refresh": false,
-  "schemaVersion": 22,
+  "refresh": "30s",
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [
     "cloudflare"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "mistressofmalt.com",
+          "value": "mistressofmalt.com"
+        },
+        "datasource": "${DS_INFLUXDB}",
+        "definition": "",
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "ZONE",
+        "multi": false,
+        "name": "zone",
+        "options": [],
+        "query": "show tag values from cloudflare_analytics with key = \"cfZone\"",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
   },
   "time": {
     "from": "now-2d",
