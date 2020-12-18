@@ -1,4 +1,6 @@
 #!/bin/bash
+set -eu
+#set -x
 ##      Original: https://github.com/jorgedlcruz/cloudflare-grafana/blob/master/cloudflare-analytics.sh
 ##      Modified by: M Moncrieffe for Atom Supplies.
 
@@ -23,22 +25,27 @@
 # Configurations
 ##
 # Endpoint URL for InfluxDB
-InfluxDBURL="YOURINFLUXSERVERIP" #Your InfluxDB Server, http://FQDN or https://FQDN if using SSL
-InfluxDBPort="8086" #Default Port
-InfluxDB="telegraf" #Default Database
-InfluxDBUser="USER" #User for Database
-InfluxDBPassword="PASSWORD" #Password for Database
+InfluxDBURL="${INFLUXDB_URL:="http://localhost"}" #Your InfluxDB Server, http://FQDN or https://FQDN if using SSL
+InfluxDBPort="${INFLUXDB_PORT:="8086"}" #Default Port
+InfluxDB="${INFLUXDB_DB:="telegraf"}" #Default Database
+InfluxDBUser="${INFLUXDB_USER:="telegraf"}" #User for Database
+InfluxDBPassword="${INFLUXDB_PASSWORD:="PASSWORD"}" #Password for Database
 
 # Endpoint URL for login action
-cloudflareapikey="YOURAPIKEY"
-cloudflarezoneid="YOURZONEID"
-cloudflarezone="YOURZONENAME"
+cloudflareapikey="${CLOUDFLARE_API_TOKEN:="dummy_api_key"}"
+cloudflarezoneid="${CLOUDFLARE_ZONE_ID:="dummy_zone_id"}"
+cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
+
+######################################
+# Define this to be "echo" in ENV to switch off non-observer operations.
+: "${ECHO:=""}"
+ECHO=echo
 
 function process_results {
     local output="$1"
     local count=$(echo "$output" | jq --raw-output ".result.timeseries" | jq length)
 
-    for i in $(seq -s ' ' 1 $count)
+    for i in $(seq -s ' ' 0 $((count-1)))
     do
       process_result "$output" "$i"
     done
@@ -48,26 +55,6 @@ function process_result {
     local output="$1"
     local index=${2:0}
     local data_tmp="${cloudflarezone}_data.$$.tmp"
-
-    ## Per Country
-    local countries=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.country" | jq keys[] | tr -d '"')
-    for country in $countries
-    do
-      visits=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.country.$country // "0"")
-      threats=$(echo "$output" | jq --raw-output ".result.timeseries[$index].threats.country.$country // "0"")
-      bandwidth=$(echo "$output" | jq --raw-output ".result.timeseries[$index].bandwidth.country.$country // "0"")
-
-# The alignement here is important (DO NOT INDENT)
-      series_name="cloudflare_analytics_country"
-      tags="\
-cfZone=$cloudflarezone,\
-country=$country"
-      data_points="\
-visits=$visits,\
-threats=$threats,\
-bandwidth=$bandwidth"
-      echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
-    done
 
     ## Requests
     cfRequestsAll=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.all")
@@ -90,7 +77,7 @@ bandwidth=$bandwidth"
 
     ## Timestamp
     date=$(echo "$output" | jq --raw-output ".result.timeseries[$index].until")
-    cfTimeStamp=`date -d "${date}" '+%s'`
+    cfTimeStamp=$(date -d "${date}" '+%s')
 
 # The alignement here is important (DO NOT INDENT)
     series_name="cloudflare_analytics"
@@ -109,7 +96,27 @@ cfPageviewsAll=$cfPageviewsAll,\
 cfUniquesAll=$cfUniquesAll"
     echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
 
-    curl -i -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" -u "$InfluxDBUser:$InfluxDBPassword" --data-binary @"$data_tmp"
+    ## Per Country
+    local countries=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.country" | jq keys[] | tr -d '"')
+    for country in $countries
+    do
+      visits=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.country.$country // "0"")
+      threats=$(echo "$output" | jq --raw-output ".result.timeseries[$index].threats.country.$country // "0"")
+      bandwidth=$(echo "$output" | jq --raw-output ".result.timeseries[$index].bandwidth.country.$country // "0"")
+
+# The alignement here is important (DO NOT INDENT)
+      series_name="cloudflare_analytics_country"
+      tags="\
+cfZone=$cloudflarezone,\
+country=$country"
+      data_points="\
+visits=$visits,\
+threats=$threats,\
+bandwidth=$bandwidth"
+      echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
+    done
+
+    ${ECHO} curl -i -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" -u "$InfluxDBUser:$InfluxDBPassword" --data-binary @"$data_tmp"
 
     # Clean up tmp file
     rm -vf "${data_tmp}"
@@ -215,7 +222,7 @@ function fetch_data_graphiQL {
 # - Last 72 hours (from -4320 to -900): 1 hour resolution
 # - Older than 3 days (-525600 to -4320): 1 day resolution
 ##
-fetch_data "-59"
+fetch_data "-59" "0"
 fetch_data "-419" "-60"
 fetch_data "-899" "-420"
 fetch_data "-1440" "-900"
