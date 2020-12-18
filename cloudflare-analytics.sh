@@ -39,7 +39,7 @@ cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
 ######################################
 # Define this to be "echo" in ENV to switch off non-observer operations.
 : "${ECHO:=""}"
-ECHO=echo
+#ECHO=echo
 
 function process_results {
     local output="$1"
