@@ -39,7 +39,6 @@ cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
 ######################################
 # Define this to be "echo" in ENV to switch off non-observer operations.
 : "${ECHO:=""}"
-#ECHO=echo
 
 function process_results {
     local output="$1"
@@ -79,7 +78,7 @@ function process_result {
     date=$(echo "$output" | jq --raw-output ".result.timeseries[$index].until")
     cfTimeStamp=$(date -d "${date}" '+%s')
 
-# The alignement here is important (DO NOT INDENT)
+# The alignment here is important (DO NOT INDENT)
     series_name="cloudflare_analytics"
     tags="\
 cfZone=$cloudflarezone,\
@@ -104,7 +103,7 @@ cfUniquesAll=$cfUniquesAll"
       threats=$(echo "$output" | jq --raw-output ".result.timeseries[$index].threats.country.$country // "0"")
       bandwidth=$(echo "$output" | jq --raw-output ".result.timeseries[$index].bandwidth.country.$country // "0"")
 
-# The alignement here is important (DO NOT INDENT)
+# The alignment here is important (DO NOT INDENT)
       series_name="cloudflare_analytics_country"
       tags="\
 cfZone=$cloudflarezone,\
