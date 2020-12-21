@@ -42,7 +42,7 @@ TMP_FILE_POSTFIX="${cloudflarezone}_data.tmp"
 
 CF_GQL_RESULTS_LIMIT=10000
 CF_GQL_SINCE_MINS="-419"
-CF_GQL_MIN_PERIOD=30 # Grab additional 30mins to cover lag CF data availability
+CF_GQL_MIN_PERIOD=60 # Grab additional overlapping data to cover lag CF data availability and outtages
 
 CF_DEFAULT_SINCE_MIN="-10080"
 CF_DEFAULT_UNTIL_MIN="0"
