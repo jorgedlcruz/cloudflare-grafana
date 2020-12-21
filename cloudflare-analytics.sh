@@ -311,7 +311,7 @@ function fetch_request_data_api {
 #####################################################
 # Query GraphQL API
 #
-# Unlikely the Analytics API above this will query at 1 min resolution for all period lengths.
+# Unlike the Analytics API above this will query at 1 min resolution for all period lengths.
 # However, it is limited to a maximum of $CF_GQL_RESULTS_LIMIT results.
 function fetch_request_data_graphql {
     local since=${1:-$CF_DEFAULT_SINCE_MIN}
