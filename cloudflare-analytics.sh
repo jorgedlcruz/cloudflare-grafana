@@ -29,7 +29,7 @@ InfluxDBURL="${INFLUXDB_URL:="http://localhost"}" #Your InfluxDB Server, http://
 InfluxDBPort="${INFLUXDB_PORT:="8086"}" #Default Port
 InfluxDB="${INFLUXDB_DB:="telegraf"}" #Default Database
 InfluxDBUser="${INFLUXDB_USER:="telegraf"}" #User for Database
-InfluxDBPassword="${INFLUXDB_PASSWORD:="PASSWORD"}" #Password for Database
+InfluxDBPassword="${INFLUXDB_PASSWORD:="password"}" #Password for Database
 
 # Endpoint URL for login action
 cloudflareapikey="${CLOUDFLARE_API_TOKEN:="dummy_api_key"}"
@@ -66,7 +66,7 @@ function process_requests_api {
 
 function process_request_api {
     local output="$1"
-    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "${TMP_FILE_DATA_TEMPLATE}")"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "api_${TMP_FILE_DATA_TEMPLATE}")"
 
     ## Requests
     cfRequestsAll=$(echo "$output" | jq --raw-output ".requests.all")
@@ -162,7 +162,7 @@ function process_results_graphql {
 
 function process_request_graphql {
     local output="$1"
-    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "${TMP_FILE_DATA_TEMPLATE}")"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "req_${TMP_FILE_DATA_TEMPLATE}")"
 
     ## Requests
     cfRequestsAll=$(echo "$output" | jq --raw-output ".sum.requests")
@@ -234,7 +234,7 @@ bandwidth=$bandwidth"
 
 function process_firewall_graphql {
     local output="$1"
-    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "${TMP_FILE_DATA_TEMPLATE}")"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "fw_${TMP_FILE_DATA_TEMPLATE}")"
 
     cfAction=$(echo "$output" | jq --raw-output ".action")
     cfClientAsn=$(echo "$output" | jq --raw-output ".clientAsn")
@@ -253,16 +253,16 @@ function process_firewall_graphql {
     series_name="cloudflare_firewall"
     tags="\
 cfZone=$cloudflarezone,\
-cfZoneId=$cloudflarezoneid"
-    data_points="\
+cfZoneId=$cloudflarezoneid,\
 cfAction=$cfAction,\
-cfClientAsn=$cfClientAsn,\
-cfClientCountryName=$cfClientCountryName,\
-cfClientIP=$cfClientIP,\
-cfClientRequestPath=$cfClientRequestPath,\
-cfClientRequestQuery=$cfClientRequestQuery,\
-cfSource=$cfSource,\
-cfUserAgent=$cfUserAgent"
+cfClientCountryName=$cfClientCountryName"
+    data_points="\
+cfClientAsn=${cfClientAsn}i,\
+cfClientIP=\"$cfClientIP\",\
+cfClientRequestPath=\"$cfClientRequestPath\",\
+cfClientRequestQuery=\"$cfClientRequestQuery\",\
+cfSource=\"$cfSource\",\
+cfUserAgent=\"$cfUserAgent\""
     echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
 
     post_influxdb_data_file "$data_tmp"
@@ -273,7 +273,11 @@ cfUserAgent=$cfUserAgent"
 function post_influxdb_data_file {
     local data_file=${1:-data_tmp}
     
-    ${ECHO} curl -i -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" -u "$InfluxDBUser:$InfluxDBPassword" --data-binary @"$data_file"
+    ${ECHO} curl -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" \
+        --user "$InfluxDBUser:$InfluxDBPassword" \
+        --data-binary @"$data_file" \
+        2>&1 --silent
+
     # Clean up tmp file
     rm -f "${data_file}"
 }
