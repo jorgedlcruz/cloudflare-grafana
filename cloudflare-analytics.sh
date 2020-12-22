@@ -66,7 +66,6 @@ function process_requests_api {
 
 function process_request_api {
     local output="$1"
-    local index=${2:-0}
     local data_tmp="api_$TMP_FILE_POSTFIX"
 
     ## Requests
@@ -163,7 +162,6 @@ function process_results_graphql {
 
 function process_request_graphql {
     local output="$1"
-    local index=${2:-0}
     local data_tmp="gql_$TMP_FILE_POSTFIX"
 
     ## Requests
@@ -236,7 +234,6 @@ bandwidth=$bandwidth"
 
 function process_firewall_graphql {
     local output="$1"
-    local index=${2:-0}
     local data_tmp="gql_$TMP_FILE_POSTFIX"
 
     cfAction=$(echo "$output" | jq --raw-output ".action")
