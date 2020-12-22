@@ -36,11 +36,12 @@ cloudflareapikey="${CLOUDFLARE_API_TOKEN:="dummy_api_key"}"
 cloudflarezoneid="${CLOUDFLARE_ZONE_ID:="dummy_zone_id"}"
 cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
 
-TMP_FILE_LASTRUN_TIME="${cloudflarezone}_lastrun.tmp"
-TMP_FILE_POSTFIX="${cloudflarezone}_data.$$.tmp"
+TMP_DIR="/tmp/cloudflare-analytics"
+TMP_FILE_LASTRUN_TIME="${TMP_DIR}/${cloudflarezone}_lastrun.tmp"
+TMP_FILE_DATA_TEMPLATE="${cloudflarezone}_data.tmp.XXXXX"
 
 CF_GQL_RESULTS_LIMIT=10000
-CF_GQL_SINCE_MINS="-419"
+CF_GQL_SINCE_MINS="-720"
 CF_GQL_MIN_PERIOD=60 # Grab additional overlapping data to cover lag CF data availability and outtages
 
 CF_DEFAULT_SINCE_MIN="-10080"
@@ -65,7 +66,7 @@ function process_requests_api {
 
 function process_request_api {
     local output="$1"
-    local data_tmp="api_$TMP_FILE_POSTFIX"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "${TMP_FILE_DATA_TEMPLATE}")"
 
     ## Requests
     cfRequestsAll=$(echo "$output" | jq --raw-output ".requests.all")
@@ -161,7 +162,7 @@ function process_results_graphql {
 
 function process_request_graphql {
     local output="$1"
-    local data_tmp="gql_$TMP_FILE_POSTFIX"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "${TMP_FILE_DATA_TEMPLATE}")"
 
     ## Requests
     cfRequestsAll=$(echo "$output" | jq --raw-output ".sum.requests")
@@ -233,7 +234,7 @@ bandwidth=$bandwidth"
 
 function process_firewall_graphql {
     local output="$1"
-    local data_tmp="gql_$TMP_FILE_POSTFIX"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "${TMP_FILE_DATA_TEMPLATE}")"
 
     cfAction=$(echo "$output" | jq --raw-output ".action")
     cfClientAsn=$(echo "$output" | jq --raw-output ".clientAsn")
@@ -274,7 +275,7 @@ function post_influxdb_data_file {
     
     ${ECHO} curl -i -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" -u "$InfluxDBUser:$InfluxDBPassword" --data-binary @"$data_file"
     # Clean up tmp file
-    ${ECHO} rm -vf "${data_file}"
+    rm -f "${data_file}"
 }
 
 #####################################################
@@ -430,6 +431,7 @@ function fetch_fw_data_graphql {
     make_graphql_post "$payload"
 }
 
+# TODO: explore the Loadbalancer analytics.
 #function fetch_lb_data_graphql {
 #    local since=${1:-$CF_DEFAULT_SINCE_MIN}
 #    local sincedate=$(date --utc +%FT%TZ -d "$since mins")
@@ -504,7 +506,7 @@ function get_last_mins {
 #####################################################
 # MAIN FUNCTION
 #
-find . -name "*${TMP_FILE_POSTFIX}" -delete
+mkdir -p "${TMP_DIR}"
 
 #fetch_request_data_api "-59" "0"
 #fetch_request_data_api "-419" "-60"
