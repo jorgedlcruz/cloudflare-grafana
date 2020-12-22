@@ -38,7 +38,6 @@ cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
 
 TMP_FILE_LASTRUN_TIME="${cloudflarezone}_lastrun.tmp"
 TMP_FILE_POSTFIX="${cloudflarezone}_data.$$.tmp"
-TMP_FILE_POSTFIX="${cloudflarezone}_data.tmp"
 
 CF_GQL_RESULTS_LIMIT=10000
 CF_GQL_SINCE_MINS="-419"
