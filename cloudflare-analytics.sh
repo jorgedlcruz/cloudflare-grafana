@@ -36,7 +36,7 @@ cloudflareapikey="${CLOUDFLARE_API_TOKEN:="dummy_api_key"}"
 cloudflarezoneid="${CLOUDFLARE_ZONE_ID:="dummy_zone_id"}"
 cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
 
-TMP_DIR="/tmp/cloudflare-analytics"
+TMP_DIR="${TMP_DIR:="/tmp/cloudflare-analytics"}"
 TMP_FILE_LASTRUN_TIME="${TMP_DIR}/${cloudflarezone}_lastrun.tmp"
 TMP_FILE_DATA_TEMPLATE="${cloudflarezone}_data.tmp.XXXXX"
 
