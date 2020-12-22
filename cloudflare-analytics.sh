@@ -511,11 +511,11 @@ function get_last_mins {
 find . -name "*${TMP_FILE_POSTFIX}" -delete
 
 #fetch_request_data_api "-59" "0"
-fetch_request_data_api "-419" "-60"
+#fetch_request_data_api "-419" "-60"
 #fetch_request_data_api "-899" "-420"
 #fetch_request_data_api "-1440" "-900"
 
-#since_mins="$(get_last_mins)"
-#fetch_request_data_graphql "$since_mins"
-#fetch_fw_data_graphql "$since_mins"
+since_mins="$(get_last_mins)"
+fetch_request_data_graphql "$since_mins"
+fetch_fw_data_graphql "$since_mins"
 #fetch_lb_data_graphql "$since_mins"
