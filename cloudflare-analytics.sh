@@ -38,6 +38,7 @@ cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
 
 TMP_FILE_LASTRUN_TIME="${cloudflarezone}_lastrun.tmp"
 TMP_FILE_POSTFIX="${cloudflarezone}_data.$$.tmp"
+TMP_FILE_POSTFIX="${cloudflarezone}_data.tmp"
 
 CF_GQL_RESULTS_LIMIT=10000
 CF_GQL_SINCE_MINS="-419"
@@ -54,7 +55,6 @@ CF_DEFAULT_UNTIL_MIN="0"
 # Processing Analytics API results.
 function process_requests_api {
     local output="$1"
-    local type=${2:-""}
 
     local count=$(echo "$output" | jq length)
     for i in $(seq -s ' ' 0 $((count-1)))
@@ -511,11 +511,11 @@ function get_last_mins {
 find . -name "*${TMP_FILE_POSTFIX}" -delete
 
 #fetch_request_data_api "-59" "0"
-#fetch_request_data_api "-419" "-60"
+fetch_request_data_api "-419" "-60"
 #fetch_request_data_api "-899" "-420"
 #fetch_request_data_api "-1440" "-900"
 
-since_mins="$(get_last_mins)"
-fetch_request_data_graphql "$since_mins"
-fetch_fw_data_graphql "$since_mins"
+#since_mins="$(get_last_mins)"
+#fetch_request_data_graphql "$since_mins"
+#fetch_fw_data_graphql "$since_mins"
 #fetch_lb_data_graphql "$since_mins"
