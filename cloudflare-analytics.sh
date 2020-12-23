@@ -59,7 +59,7 @@ function process_requests_api {
     local count=$(echo "$output" | jq length)
     for i in $(seq -s ' ' 0 $((count-1)))
     do
-      local values=$(echo $output | jq .[$i])
+      local values=$(echo "$output" | jq .[$i])
       process_request_api "$values"
     done
 }
@@ -136,13 +136,13 @@ bandwidth=$bandwidth"
 function process_results_graphql {
     local output="$1"
 
-    local keys=$(echo $output | jq keys[] | tr -d '"')
+    local keys=$(echo "$output" | jq keys[] | tr -d '"')
     for k in $keys
     do
-      local count=$(echo "$output" | jq .$k | jq length)
+      local count=$(echo "$output" | jq ."$k" | jq length)
       for i in $(seq -s ' ' 0 $((count-1)))
       do
-        local values=$(echo $output | jq .$k[$i])
+        local values=$(echo "$output" | jq ."$k"["$i"])
         case $k in
           httpRequests1mGroups)
             process_request_graphql "$values"
