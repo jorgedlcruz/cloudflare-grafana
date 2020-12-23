@@ -273,7 +273,6 @@ cfUserAgent=\"$cfUserAgent\""
 function post_influxdb_data_file {
     local data_file=${1:-data_tmp}
 
-    cat $data_file
     ${ECHO} curl -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" \
         --user "$InfluxDBUser:$InfluxDBPassword" \
         --data-binary @"$data_file" \
