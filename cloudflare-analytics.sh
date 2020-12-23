@@ -29,53 +29,66 @@ InfluxDBURL="${INFLUXDB_URL:="http://localhost"}" #Your InfluxDB Server, http://
 InfluxDBPort="${INFLUXDB_PORT:="8086"}" #Default Port
 InfluxDB="${INFLUXDB_DB:="telegraf"}" #Default Database
 InfluxDBUser="${INFLUXDB_USER:="telegraf"}" #User for Database
-InfluxDBPassword="${INFLUXDB_PASSWORD:="PASSWORD"}" #Password for Database
+InfluxDBPassword="${INFLUXDB_PASSWORD:="password"}" #Password for Database
 
 # Endpoint URL for login action
 cloudflareapikey="${CLOUDFLARE_API_TOKEN:="dummy_api_key"}"
 cloudflarezoneid="${CLOUDFLARE_ZONE_ID:="dummy_zone_id"}"
 cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
 
+TMP_DIR="${TMP_DIR:="/tmp/cloudflare-analytics"}"
+TMP_FILE_LASTRUN_TIME="${TMP_DIR}/${cloudflarezone}_lastrun.tmp"
+TMP_FILE_DATA_TEMPLATE="${cloudflarezone}_data.tmp.XXXXX"
+
+CF_GQL_RESULTS_LIMIT=10000
+CF_GQL_SINCE_MINS="-720"
+CF_GQL_MIN_PERIOD=60 # Grab additional overlapping data to cover lag CF data availability and outtages
+
+CF_DEFAULT_SINCE_MIN="-10080"
+CF_DEFAULT_UNTIL_MIN="0"
+
 ######################################
 # Define this to be "echo" in ENV to switch off non-observer operations.
 : "${ECHO:=""}"
 
-function process_results {
+#####################################################
+# Processing Analytics API results.
+function process_requests_api {
     local output="$1"
-    local count=$(echo "$output" | jq --raw-output ".result.timeseries" | jq length)
 
+    local count=$(echo "$output" | jq length)
     for i in $(seq -s ' ' 0 $((count-1)))
     do
-      process_result "$output" "$i"
+      local values=$(echo $output | jq .[$i])
+      process_request_api "$values"
     done
 }
 
-function process_result {
+function process_request_api {
     local output="$1"
-    local index=${2:0}
-    local data_tmp="${cloudflarezone}_data.$$.tmp"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "api_${TMP_FILE_DATA_TEMPLATE}")"
 
     ## Requests
-    cfRequestsAll=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.all")
-    cfRequestsCached=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.cached")
-    cfRequestsUncached=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.uncached")
+    cfRequestsAll=$(echo "$output" | jq --raw-output ".requests.all")
+    cfRequestsCached=$(echo "$output" | jq --raw-output ".requests.cached")
+    cfRequestsUncached=$(echo "$output" | jq --raw-output ".requests.uncached")
 
     ## Bandwidth
-    cfBandwidthAll=$(echo "$output" | jq --raw-output ".result.timeseries[$index].bandwidth.all")
-    cfBandwidthCached=$(echo "$output" | jq --raw-output ".result.timeseries[$index].bandwidth.cached")
-    cfBandwidthUncached=$(echo "$output" | jq --raw-output ".result.timeseries[$index].bandwidth.uncached")
+    cfBandwidthAll=$(echo "$output" | jq --raw-output ".bandwidth.all")
+    cfBandwidthCached=$(echo "$output" | jq --raw-output ".bandwidth.cached")
+    cfBandwidthUncached=$(echo "$output" | jq --raw-output ".bandwidth.uncached")
 
     ## Threats
-    cfThreatsAll=$(echo "$output" | jq --raw-output ".result.timeseries[$index].threats.all")
+    cfThreatsAll=$(echo "$output" | jq --raw-output ".threats.all")
 
     ## Pageviews
-    cfPageviewsAll=$(echo "$output" | jq --raw-output ".result.timeseries[$index].pageviews.all")
+    cfPageviewsAll=$(echo "$output" | jq --raw-output ".pageviews.all")
 
     ## Unique visits
-    cfUniquesAll=$(echo "$output" | jq --raw-output ".result.timeseries[$index].uniques.all")
+    cfUniquesAll=$(echo "$output" | jq --raw-output ".uniques.all")
 
     ## Timestamp
-    date=$(echo "$output" | jq --raw-output ".result.timeseries[$index].until")
+    date=$(echo "$output" | jq --raw-output ".until")
     cfTimeStamp=$(date -d "${date}" '+%s')
 
 # The alignment here is important (DO NOT INDENT)
@@ -96,12 +109,12 @@ cfUniquesAll=$cfUniquesAll"
     echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
 
     ## Per Country
-    local countries=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.country" | jq keys[] | tr -d '"')
+    local countries=$(echo "$output" | jq --raw-output ".requests.country" | jq keys[] | tr -d '"')
     for country in $countries
     do
-      visits=$(echo "$output" | jq --raw-output ".result.timeseries[$index].requests.country.$country // "0"")
-      threats=$(echo "$output" | jq --raw-output ".result.timeseries[$index].threats.country.$country // "0"")
-      bandwidth=$(echo "$output" | jq --raw-output ".result.timeseries[$index].bandwidth.country.$country // "0"")
+      visits=$(echo "$output" | jq --raw-output ".requests.country.$country // "0"")
+      threats=$(echo "$output" | jq --raw-output ".threats.country.$country // "0"")
+      bandwidth=$(echo "$output" | jq --raw-output ".bandwidth.country.$country // "0"")
 
 # The alignment here is important (DO NOT INDENT)
       series_name="cloudflare_analytics_country"
@@ -115,104 +128,166 @@ bandwidth=$bandwidth"
       echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
     done
 
-    ${ECHO} curl -i -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" -u "$InfluxDBUser:$InfluxDBPassword" --data-binary @"$data_tmp"
+    post_influxdb_data_file "$data_tmp"
+}
+
+#####################################################
+# Processing GraphQL results.
+function process_results_graphql {
+    local output="$1"
+
+    local keys=$(echo $output | jq keys[] | tr -d '"')
+    for k in $keys
+    do
+      local count=$(echo "$output" | jq .$k | jq length)
+      for i in $(seq -s ' ' 0 $((count-1)))
+      do
+        local values=$(echo $output | jq .$k[$i])
+        case $k in
+          httpRequests1mGroups)
+            process_request_graphql "$values"
+            ;;
+          firewallEventsAdaptive)
+            process_firewall_graphql "$values"
+            ;;
+          loadBalancingRequestsAdaptive)
+            ;;
+          *)
+            echo "process_requests: Unknown key: $k"
+            ;;
+        esac
+      done
+    done
+}
+
+function process_request_graphql {
+    local output="$1"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "req_${TMP_FILE_DATA_TEMPLATE}")"
+
+    ## Requests
+    cfRequestsAll=$(echo "$output" | jq --raw-output ".sum.requests")
+    cfRequestsCached=$(echo "$output" | jq --raw-output ".sum.cachedRequests")
+    cfRequestsUncached=$((cfRequestsAll-cfRequestsCached))
+    cfRequestsEncrypt=$(echo "$output" | jq --raw-output ".sum.encryptedRequests")
+
+    ## Bandwidth
+    cfBandwidthAll=$(echo "$output" | jq --raw-output ".sum.bytes")
+    cfBandwidthCached=$(echo "$output" | jq --raw-output ".sum.cachedBytes")
+    cfBandwidthUncached=$((cfBandwidthAll-cfBandwidthCached))
+    cfbandwidthEncrypt=$(echo "$output" | jq --raw-output ".sum.encryptedBytes")
+
+    ## Threats
+    cfThreatsAll=$(echo "$output" | jq --raw-output ".sum.threats")
+
+    ## Pageviews
+    cfPageviewsAll=$(echo "$output" | jq --raw-output ".sum.pageViews")
+
+    ## Unique visits
+    cfUniquesAll=$(echo "$output" | jq --raw-output ".uniq.uniques")
+
+    ## Timestamp
+    date=$(echo "$output" | jq --raw-output ".dimensions.datetime")
+    cfTimeStamp=$(date -d "${date}" '+%s')
+
+# The alignment here is important (DO NOT INDENT)
+    series_name="cloudflare_analytics"
+    tags="\
+cfZone=$cloudflarezone,\
+cfZoneId=$cloudflarezoneid"
+    data_points="\
+cfRequestsAll=$cfRequestsAll,\
+cfRequestsCached=$cfRequestsCached,\
+cfRequestsUncached=$cfRequestsUncached,\
+cfRequestsEncrypt=$cfRequestsEncrypt,\
+cfBandwidthAll=$cfBandwidthAll,\
+cfBandwidthCached=$cfBandwidthCached,\
+cfBandwidthUncached=$cfBandwidthUncached,\
+cfbandwidthEncrypt=$cfbandwidthEncrypt,\
+cfThreatsAll=$cfThreatsAll,\
+cfPageviewsAll=$cfPageviewsAll,\
+cfUniquesAll=$cfUniquesAll"
+    echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
+
+    ## Per Country
+    local count=$(echo "$output" | jq --raw-output ".sum.countryMap" | jq length)
+    for c in $(seq -s ' ' 0 $((count-1)))
+    do
+      country=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].clientCountryName // "0"")
+      visits=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].requests // "0"")
+      threats=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].threats // "0"")
+      bandwidth=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].bytes // "0"")
+
+# The alignment here is important (DO NOT INDENT)
+      series_name="cloudflare_analytics_country"
+      tags="\
+cfZone=$cloudflarezone,\
+country=$country"
+      data_points="\
+visits=$visits,\
+threats=$threats,\
+bandwidth=$bandwidth"
+      echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
+    done
+
+    post_influxdb_data_file "$data_tmp"
+}
+
+function process_firewall_graphql {
+    local output="$1"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "fw_${TMP_FILE_DATA_TEMPLATE}")"
+
+    cfAction=$(echo "$output" | jq --raw-output ".action")
+    cfClientAsn=$(echo "$output" | jq --raw-output ".clientAsn")
+    cfClientCountryName=$(echo "$output" | jq --raw-output ".clientCountryName")
+    cfClientIP=$(echo "$output" | jq --raw-output ".clientIP")
+    cfClientRequestPath=$(echo "$output" | jq --raw-output ".clientRequestPath")
+    cfClientRequestQuery=$(echo "$output" | jq --raw-output ".clientRequestQuery")
+    cfSource=$(echo "$output" | jq --raw-output ".source")
+    cfUserAgent=$(echo "$output" | jq --raw-output ".userAgent")
+
+    ## Timestamp
+    date=$(echo "$output" | jq --raw-output ".datetime")
+    cfTimeStamp=$(date -d "${date}" '+%s')
+
+# The alignment here is important (DO NOT INDENT)
+    series_name="cloudflare_firewall"
+    tags="\
+cfZone=$cloudflarezone,\
+cfZoneId=$cloudflarezoneid,\
+cfAction=$cfAction,\
+cfClientCountryName=$cfClientCountryName"
+    data_points="\
+cfClientAsn=${cfClientAsn}i,\
+cfClientIP=\"$cfClientIP\",\
+cfClientRequestPath=\"$cfClientRequestPath\",\
+cfClientRequestQuery=\"$cfClientRequestQuery\",\
+cfSource=\"$cfSource\",\
+cfUserAgent=\"$cfUserAgent\""
+    echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
+
+    post_influxdb_data_file "$data_tmp"
+}
+
+#####################################################
+# Post to influxDB
+function post_influxdb_data_file {
+    local data_file=${1:-data_tmp}
+    
+    ${ECHO} curl -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" \
+        --user "$InfluxDBUser:$InfluxDBPassword" \
+        --data-binary @"$data_file" \
+        2>&1 --silent
 
     # Clean up tmp file
-    rm -vf "${data_tmp}"
+    rm -f "${data_file}"
 }
 
-function fetch_data {
-    local since=${1:-10080}
-    local until=${2:0}
-
-    cloudflareRestURL="https://api.cloudflare.com/client/v4/zones/$cloudflarezoneid/analytics/dashboard?since=$since&until=$until&continuous=false"
-    output=$(curl -X GET "$cloudflareRestURL" \
-                            --header "Accept:application/json" \
-                            --header "Authorization:Bearer $cloudflareapikey" \
-                            2>&1 -k --silent)
-    process_results "$output"
-}
-
-# The above API will be deprecated. This is an, as yet untested, replacement call using the new API.
-function fetch_data_graphiQL {
-    local since=${1:-10080}
-    local sincedate=$(date -d "$since mins ago")
-    local until=${2:0}
-    local untildate=$(date -d "$until mins ago")
-
-    local payload="{
-                      viewer {
-                        zones(filter: {zoneTag: $cloudflarezoneid}) {
-                          httpRequests1mGroups(orderBy: [datetimeMinute_ASC],
-                                               limit: 100,
-                                               filter: { datetime_geq: "$sincedate", datetime_lt: "$untildate"}
-                                               )
-                          {
-                            dimensions {
-                              datetimeMinute
-                            }
-                            sum {
-                              browserMap {
-                                pageViews
-                                uaBrowserFamily
-                              }
-                              bytes
-                              cachedBytes
-                              cachedRequests
-                              contentTypeMap {
-                                bytes
-                                requests
-                                edgeResponseContentTypeName
-                              }
-                              clientSSLMap {
-                                requests
-                                clientSSLProtocol
-                              }
-                              countryMap {
-                                bytes
-                                requests
-                                threats
-                                clientCountryName
-                              }
-                              encryptedBytes
-                              encryptedRequests
-                              ipClassMap {
-                                requests
-                                ipType
-                              }
-                              pageViews
-                              requests
-                              responseStatusMap {
-                                requests
-                                edgeResponseStatus
-                              }
-                              threats
-                              threatPathingMap {
-                                requests
-                                threatPathingName
-                              }
-                            }
-                            uniq {
-                              uniques
-                            }
-                          }
-                        }
-                      }
-                    }"
-
-    cloudflareRestURL="https://api.cloudflare.com/client/v4/graphql/"
-    output=$(curl -X GET "$cloudflareRestURL" \
-                            --header "Accept:application/json" \
-                            --header "Authorization:Bearer $cloudflareapikey" \
-                            --data "$payload" \
-                            2>&1 -k --silent)
-    process_results "$output"
-}
-
-###################
-# MAIN FUNCTION
+#####################################################
+# Query Analytics API
 #
-# This part will check on your Cloudflare Analytics, extracting the data from the configured period...
+# This API will be deprecated in 2021.
+#
+# Check Cloudflare Analytics, extracting the data from the configured period...
 #
 # Ranges that the Cloudflare web application provides will provide the following period length for each point:
 # - Last 60 minutes (from -59 to -1): 1 minute resolution
@@ -220,9 +295,229 @@ function fetch_data_graphiQL {
 # - Last 15 hours (from -899 to -420): 30 minutes resolution
 # - Last 72 hours (from -4320 to -900): 1 hour resolution
 # - Older than 3 days (-525600 to -4320): 1 day resolution
-##
-fetch_data "-59" "0"
-fetch_data "-419" "-60"
-fetch_data "-899" "-420"
-fetch_data "-1440" "-900"
+function fetch_request_data_api {
+    local since=${1:-$CF_DEFAULT_SINCE_MIN}
+    local until=${2:0}
 
+    cloudflareRestURL="https://api.cloudflare.com/client/v4/zones/$cloudflarezoneid/analytics/dashboard?since=$since&until=$until&continuous=false"
+    output=$(curl -X GET "$cloudflareRestURL" \
+          --header "Accept:application/json" \
+          --header "Authorization:Bearer $cloudflareapikey" \
+          --insecure \
+          2>&1 --silent | jq --raw-output ".result.timeseries" )
+    process_requests_api "$output"
+}
+
+#####################################################
+# Query GraphQL API
+#
+# Unlike the Analytics API above, this will query at 1 min resolution for all period lengths.
+# However, it is limited to a maximum of $CF_GQL_RESULTS_LIMIT results.
+function fetch_request_data_graphql {
+    local since=${1:-$CF_DEFAULT_SINCE_MIN}
+    local sincedate=$(date --utc +%FT%TZ -d "$since mins")
+    local until=${2:-$CF_DEFAULT_UNTIL_MIN}
+    local untildate=$(date --utc +%FT%TZ -d "$until mins")
+    local result_limit=${3:-$CF_GQL_RESULTS_LIMIT}
+
+    local gql_variables="{
+        \"zoneTag\": \"$cloudflarezoneid\",
+        \"limit\": $result_limit,
+        \"filter\": {
+          \"datetime_geq\": \"$sincedate\",
+          \"datetime_leq\": \"$untildate\"
+          }
+        }"
+    local payload="{
+      \"query\": \"{
+        viewer {
+          zones(filter: { zoneTag: \$zoneTag }) {
+            httpRequests1mGroups(
+               limit: \$limit
+               filter: \$filter
+               orderBy: [datetime_ASC]
+            ) {
+              dimensions {
+                datetime
+              }
+              sum {
+                browserMap {
+                  pageViews
+                  uaBrowserFamily
+                }
+                bytes
+                cachedBytes
+                cachedRequests
+                contentTypeMap {
+                  bytes
+                  requests
+                  edgeResponseContentTypeName
+                }
+                clientSSLMap {
+                  requests
+                  clientSSLProtocol
+                }
+                countryMap {
+                  bytes
+                  requests
+                  threats
+                  clientCountryName
+                }
+                encryptedBytes
+                encryptedRequests
+                ipClassMap {
+                  requests
+                  ipType
+                }
+                pageViews
+                requests
+                responseStatusMap {
+                  requests
+                  edgeResponseStatus
+                }
+                threats
+                threatPathingMap {
+                  requests
+                  threatPathingName
+                }
+              }
+              uniq {
+                uniques
+              }
+            }
+          }
+        }
+      }\",
+      \"variables\": $gql_variables
+    }"
+    make_graphql_post "$payload"
+}
+
+function fetch_fw_data_graphql {
+    local since=${1:-$CF_DEFAULT_SINCE_MIN}
+    local sincedate=$(date --utc +%FT%TZ -d "$since mins")
+    local until=${2:-$CF_DEFAULT_UNTIL_MIN}
+    local untildate=$(date --utc +%FT%TZ -d "$until mins")
+    local result_limit=${3:-$CF_GQL_RESULTS_LIMIT}
+
+    local gql_variables="{
+        \"zoneTag\": \"$cloudflarezoneid\",
+        \"limit\": $result_limit,
+        \"filter\": {
+          \"datetime_geq\": \"$sincedate\",
+          \"datetime_leq\": \"$untildate\"
+          }
+        }"
+    local payload="{
+      \"query\": \"query ListFirewallEvents(\$zoneTag: string, \$filter: FirewallEventsAdaptiveFilter_InputObject) {
+        viewer {
+          zones(filter: { zoneTag: \$zoneTag }) {
+            firewallEventsAdaptive(
+              filter: \$filter
+              limit: \$limit
+              orderBy: [datetime_DESC]
+            ) {
+              action
+              clientAsn
+              clientCountryName
+              clientIP
+              clientRequestPath
+              clientRequestQuery
+              datetime
+              source
+              userAgent
+            }
+          }
+        }
+      }\",
+      \"variables\": $gql_variables
+    }"
+    make_graphql_post "$payload"
+}
+
+# TODO: explore the Loadbalancer analytics.
+#function fetch_lb_data_graphql {
+#    local since=${1:-$CF_DEFAULT_SINCE_MIN}
+#    local sincedate=$(date --utc +%FT%TZ -d "$since mins")
+#    local until=${2:-$CF_DEFAULT_UNTIL_MIN}
+#    local untildate=$(date --utc +%FT%TZ -d "$until mins")
+#    local result_limit=${3:-$CF_GQL_RESULTS_LIMIT}
+#
+#    local gql_variables="{
+#        \"zoneTag\": \"$cloudflarezoneid\",
+#        \"limit\": $result_limit,
+#        \"filter\": {
+#          \"datetime_geq\": \"$sincedate\",
+#          \"datetime_leq\": \"$untildate\"
+#          }
+#        }"
+#    local payload="{
+#      \"query\": \" {
+#        viewer {
+#          zones(filter: { zoneTag: \$zoneTag }) {
+#            loadBalancingRequestsAdaptive(
+#              filter: \$filter
+#              limit: \$limit
+#              orderBy: [datetime_DESC]
+#            ) {
+#              datetime
+#              lbName
+#              proxied
+#              region
+#              sessionAffinity
+#              sessionAffinityStatus
+#              steeringPolicy
+#            }
+#          }
+#        }
+#      }\",
+#      \"variables\": $gql_variables
+#    }"
+#    make_graphql_post "$payload"
+#}
+
+function make_graphql_post {
+    local payload="$1"
+
+    cloudflareRestURL="https://api.cloudflare.com/client/v4/graphql/"
+    output=$(curl -X POST "$cloudflareRestURL" \
+         --header "Accept:application/json" \
+         --header "Authorization:Bearer $cloudflareapikey" \
+         --insecure \
+         --data "$(echo $payload)" \
+        2>&1 --silent | jq .data.viewer.zones[0])
+    process_results_graphql "$output"
+}
+
+function get_last_mins {
+    local last_mins="$CF_GQL_SINCE_MINS"
+    local min_period="$CF_GQL_MIN_PERIOD"
+
+    # Find out when we last ran so that we can collect only the require period
+    if [ -e $TMP_FILE_LASTRUN_TIME ]
+    then
+      last_run=$(cat $TMP_FILE_LASTRUN_TIME)
+      last_secs=$(($(date +%s -d "$last_run") - $(date +%s)))
+      last_mins=$(((last_secs/60)-min_period))
+    fi
+
+    # Reset the time last run
+    date --utc +%FT%TZ > $TMP_FILE_LASTRUN_TIME
+
+    echo $last_mins
+}
+
+#####################################################
+# MAIN FUNCTION
+#
+mkdir -p "${TMP_DIR}"
+
+#fetch_request_data_api "-59" "0"
+#fetch_request_data_api "-419" "-60"
+#fetch_request_data_api "-899" "-420"
+#fetch_request_data_api "-1440" "-900"
+
+since_mins="$(get_last_mins)"
+fetch_request_data_graphql "$since_mins"
+fetch_fw_data_graphql "$since_mins"
+#fetch_lb_data_graphql "$since_mins"
