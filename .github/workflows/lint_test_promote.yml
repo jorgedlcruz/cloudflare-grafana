@@ -22,7 +22,9 @@ jobs:
       # replace "master" with any valid ref
       - name: Run Shellcheck
         uses: azohra/shell-linter@latest
- 
+        with:
+          severity: "error"
+
   promote:
     if: github.ref == 'refs/heads/devel'
     runs-on: ubuntu-latest
