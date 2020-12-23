@@ -60,7 +60,7 @@
       }
     ]
   },
-  "description": "Grafana Dashboard for Cloudflare Analytics and Overview",
+  "description": "Cloudflare Analytics and Overview",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
@@ -1835,7 +1835,7 @@
     ]
   },
   "timezone": "",
-  "title": "Grafana Dashboard for Cloudflare Analytics and Overview",
+  "title": "Cloudflare Analytics and Overview",
   "uid": "iFcf4yqZk",
   "version": 12
 }
