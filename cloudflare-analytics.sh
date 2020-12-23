@@ -112,9 +112,9 @@ cfUniquesAll=$cfUniquesAll"
     local countries=$(echo "$output" | jq --raw-output ".requests.country" | jq keys[] | tr -d '"')
     for country in $countries
     do
-      visits=$(echo "$output" | jq --raw-output ".requests.country.$country // "0"")
-      threats=$(echo "$output" | jq --raw-output ".threats.country.$country // "0"")
-      bandwidth=$(echo "$output" | jq --raw-output ".bandwidth.country.$country // "0"")
+      visits=$(echo "$output" | jq --raw-output ".requests.country.$country // \"0\"")
+      threats=$(echo "$output" | jq --raw-output ".threats.country.$country // \"0\"")
+      bandwidth=$(echo "$output" | jq --raw-output ".bandwidth.country.$country // \"0\"")
 
 # The alignment here is important (DO NOT INDENT)
       series_name="cloudflare_analytics_country"
@@ -212,10 +212,10 @@ cfUniquesAll=$cfUniquesAll"
     local count=$(echo "$output" | jq --raw-output ".sum.countryMap" | jq length)
     for c in $(seq -s ' ' 0 $((count-1)))
     do
-      country=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].clientCountryName // "0"")
-      visits=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].requests // "0"")
-      threats=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].threats // "0"")
-      bandwidth=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].bytes // "0"")
+      country=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].clientCountryName // \"0\"")
+      visits=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].requests // \"0\"")
+      threats=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].threats // \"0\"")
+      bandwidth=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].bytes // \"0\"")
 
 # The alignment here is important (DO NOT INDENT)
       series_name="cloudflare_analytics_country"
@@ -272,7 +272,8 @@ cfUserAgent=\"$cfUserAgent\""
 # Post to influxDB
 function post_influxdb_data_file {
     local data_file=${1:-data_tmp}
-    
+
+    cat $data_file
     ${ECHO} curl -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" \
         --user "$InfluxDBUser:$InfluxDBPassword" \
         --data-binary @"$data_file" \
