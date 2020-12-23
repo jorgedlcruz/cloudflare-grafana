@@ -7,7 +7,7 @@ name: Lint, Test and Promote
 on:
   push:
     branches:
-      - main
+      - master
       - devel
   pull_request:
 
@@ -37,7 +37,7 @@ jobs:
         with:
           type: now
           from_branch: devel
-          target_branch: main
+          target_branch: master
           github_token: ${{ github.token }}
 
       - name: Bump version and push tag
