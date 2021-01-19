@@ -39,6 +39,7 @@ cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
 TMP_DIR="${TMP_DIR:="/tmp/cloudflare-analytics"}"
 TMP_FILE_LASTRUN_TIME="${TMP_DIR}/${cloudflarezone}_lastrun.tmp"
 TMP_FILE_DATA_TEMPLATE="${cloudflarezone}_data.tmp.XXXXX"
+TMP_FILE_LOCK="${TMP_DIR}/${cloudflarezone}.lock"
 
 CF_GQL_RESULTS_LIMIT=10000
 CF_GQL_SINCE_MINS="-720"
@@ -507,10 +508,21 @@ function get_last_mins {
     echo $last_mins
 }
 
+function check_running {
+  if [ -e "${TMP_FILE_LOCK}" ]; then
+    echo "Already running"
+    return 1
+  fi
+  echo "$$" > "${TMP_FILE_LOCK}"
+}
+
 #####################################################
 # MAIN FUNCTION
 #
 mkdir -p "${TMP_DIR}"
+
+check_running || exit 1
+echo "Running"
 
 #fetch_request_data_api "-59" "0"
 #fetch_request_data_api "-419" "-60"
@@ -521,3 +533,7 @@ since_mins="$(get_last_mins)"
 fetch_request_data_graphql "$since_mins"
 fetch_fw_data_graphql "$since_mins"
 #fetch_lb_data_graphql "$since_mins"
+
+# Clear the lock file
+rm -v "${TMP_FILE_LOCK}"
+exit 0
