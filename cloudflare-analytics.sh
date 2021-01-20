@@ -60,7 +60,7 @@ function process_requests_api {
     local count=$(echo "$output" | jq length)
     for i in $(seq -s ' ' 0 $((count-1)))
     do
-      local values=$(echo "$output" | jq .[$i])
+      local values=$(echo "$output" | jq --compact-output .[$i])
       process_request_api "$values"
     done
 }
@@ -143,7 +143,7 @@ function process_results_graphql {
       local count=$(echo "$output" | jq ."$k" | jq length)
       for i in $(seq -s ' ' 0 $((count-1)))
       do
-        local values=$(echo "$output" | jq ."$k"["$i"])
+        local values=$(echo "$output" | jq --compact-output ."$k"["$i"])
         case $k in
           httpRequests1mGroups)
             process_request_graphql "$values"
@@ -164,24 +164,25 @@ function process_results_graphql {
 function process_request_graphql {
     local output="$1"
     local data_tmp="$(mktemp -p "${TMP_DIR}" -t "req_${TMP_FILE_DATA_TEMPLATE}")"
+    local output_sum=$(echo "$output" | jq --compact-output ".sum")
 
     ## Requests
-    cfRequestsAll=$(echo "$output" | jq --raw-output ".sum.requests")
-    cfRequestsCached=$(echo "$output" | jq --raw-output ".sum.cachedRequests")
+    cfRequestsAll=$(echo "$output_sum" | jq --raw-output ".requests")
+    cfRequestsCached=$(echo "$output_sum" | jq --raw-output ".cachedRequests")
     cfRequestsUncached=$((cfRequestsAll-cfRequestsCached))
-    cfRequestsEncrypt=$(echo "$output" | jq --raw-output ".sum.encryptedRequests")
+    cfRequestsEncrypt=$(echo "$output_sum" | jq --raw-output ".encryptedRequests")
 
     ## Bandwidth
-    cfBandwidthAll=$(echo "$output" | jq --raw-output ".sum.bytes")
-    cfBandwidthCached=$(echo "$output" | jq --raw-output ".sum.cachedBytes")
+    cfBandwidthAll=$(echo "$output_sum" | jq --raw-output ".bytes")
+    cfBandwidthCached=$(echo "$output_sum" | jq --raw-output ".cachedBytes")
     cfBandwidthUncached=$((cfBandwidthAll-cfBandwidthCached))
-    cfbandwidthEncrypt=$(echo "$output" | jq --raw-output ".sum.encryptedBytes")
+    cfbandwidthEncrypt=$(echo "$output_sum" | jq --raw-output ".encryptedBytes")
 
     ## Threats
-    cfThreatsAll=$(echo "$output" | jq --raw-output ".sum.threats")
+    cfThreatsAll=$(echo "$output_sum" | jq --raw-output ".threats")
 
     ## Pageviews
-    cfPageviewsAll=$(echo "$output" | jq --raw-output ".sum.pageViews")
+    cfPageviewsAll=$(echo "$output_sum" | jq --raw-output ".pageViews")
 
     ## Unique visits
     cfUniquesAll=$(echo "$output" | jq --raw-output ".uniq.uniques")
@@ -210,13 +211,14 @@ cfUniquesAll=$cfUniquesAll"
     echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
 
     ## Per Country
-    local count=$(echo "$output" | jq --raw-output ".sum.countryMap" | jq length)
+    local count=$(echo "$output_sum" | jq --raw-output '".countryMap" | length')
     for c in $(seq -s ' ' 0 $((count-1)))
     do
-      country=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].clientCountryName // \"0\"")
-      visits=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].requests // \"0\"")
-      threats=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].threats // \"0\"")
-      bandwidth=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].bytes // \"0\"")
+      local output_sum_country=$(echo "$output_sum" | jq --compact-output ".countryMap[$c]")
+      country=$(echo "$output_sum_country" | jq --raw-output ".clientCountryName // \"0\"")
+      visits=$(echo "$output_sum_country" | jq --raw-output ".requests // \"0\"")
+      threats=$(echo "$output_sum_country" | jq --raw-output ".threats // \"0\"")
+      bandwidth=$(echo "$output_sum_country" | jq --raw-output ".bytes // \"0\"")
 
 # The alignment here is important (DO NOT INDENT)
       series_name="cloudflare_analytics_country"
@@ -305,7 +307,7 @@ function fetch_request_data_api {
           --header "Accept:application/json" \
           --header "Authorization:Bearer $cloudflareapikey" \
           --insecure \
-          2>&1 --silent | jq --raw-output ".result.timeseries" )
+          2>&1 --silent | jq --compact-output ".result.timeseries" )
     process_requests_api "$output"
 }
 
@@ -486,7 +488,7 @@ function make_graphql_post {
          --header "Authorization:Bearer $cloudflareapikey" \
          --insecure \
          --data "$(echo $payload)" \
-        2>&1 --silent | jq .data.viewer.zones[0])
+        2>&1 --silent | jq --compact-output .data.viewer.zones[0])
     process_results_graphql "$output"
 }
 
