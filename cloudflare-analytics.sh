@@ -48,6 +48,9 @@ CF_GQL_MIN_PERIOD=60 # Grab additional overlapping data to cover lag CF data ava
 CF_DEFAULT_SINCE_MIN="-10080"
 CF_DEFAULT_UNTIL_MIN="0"
 
+# Threshold in bytes
+INFLUXDB_POST_DATA_SIZE_THRESHOLD=16348
+
 ######################################
 # Define this to be "echo" in ENV to switch off non-observer operations.
 : "${ECHO:=""}"
@@ -130,12 +133,15 @@ bandwidth=$bandwidth"
     done
 
     post_influxdb_data_file "$data_tmp"
+
+    rm -vf "$data_tmp"
 }
 
 #####################################################
 # Processing GraphQL results.
 function process_results_graphql {
     local output="$1"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "req_${TMP_FILE_DATA_TEMPLATE}")"
 
     local keys=$(echo "$output" | jq keys[] | tr -d '"')
     for k in $keys
@@ -146,10 +152,10 @@ function process_results_graphql {
         local values=$(echo "$output" | jq --compact-output ."$k"["$i"])
         case $k in
           httpRequests1mGroups)
-            process_request_graphql "$values"
+            process_request_graphql "$values" "$data_tmp"
             ;;
           firewallEventsAdaptive)
-            process_firewall_graphql "$values"
+            process_firewall_graphql "$values" "$data_tmp"
             ;;
           loadBalancingRequestsAdaptive)
             ;;
@@ -159,11 +165,16 @@ function process_results_graphql {
         esac
       done
     done
+
+    # Let's post any tail end data.
+    post_influxdb_data_file "$data_tmp" 0
+    # Clean up tmp file
+    rm -vf "$data_tmp"
 }
 
 function process_request_graphql {
     local output="$1"
-    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "req_${TMP_FILE_DATA_TEMPLATE}")"
+    local data_tmp="$2"
     local output_sum=$(echo "$output" | jq --compact-output ".sum")
 
     ## Requests
@@ -237,7 +248,7 @@ bandwidth=$bandwidth"
 
 function process_firewall_graphql {
     local output="$1"
-    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "fw_${TMP_FILE_DATA_TEMPLATE}")"
+    local data_tmp="$2"
 
     cfAction=$(echo "$output" | jq --raw-output ".action")
     cfClientAsn=$(echo "$output" | jq --raw-output ".clientAsn")
@@ -271,10 +282,23 @@ cfUserAgent=\"$cfUserAgent\""
     post_influxdb_data_file "$data_tmp"
 }
 
+function check_file_size {
+    local file=$1
+    local min_size=$2
+    local act_size=$(wc -c <"$file")
+
+    if [ $act_size -ge $min_size ]; then
+        return 1
+    fi
+}
+
 #####################################################
 # Post to influxDB
 function post_influxdb_data_file {
-    local data_file=${1:-data_tmp}
+    local data_file=$1
+    local threshold=${2:-$INFLUXDB_POST_DATA_SIZE_THRESHOLD}
+
+    check_file_size "$data_file" "$threshold" && return 0
 
     ${ECHO} curl -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" \
         --user "$InfluxDBUser:$InfluxDBPassword" \
@@ -282,7 +306,7 @@ function post_influxdb_data_file {
         2>&1 --silent
 
     # Clean up tmp file
-    rm -f "${data_file}"
+    echo -n "" > "$data_file"
 }
 
 #####################################################
