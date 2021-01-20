@@ -39,6 +39,7 @@ cloudflarezone="${CLOUDFLARE_ZONE_NAME:="dummy_zone_name"}"
 TMP_DIR="${TMP_DIR:="/tmp/cloudflare-analytics"}"
 TMP_FILE_LASTRUN_TIME="${TMP_DIR}/${cloudflarezone}_lastrun.tmp"
 TMP_FILE_DATA_TEMPLATE="${cloudflarezone}_data.tmp.XXXXX"
+TMP_FILE_LOCK="${TMP_DIR}/${cloudflarezone}.lock"
 
 CF_GQL_RESULTS_LIMIT=10000
 CF_GQL_SINCE_MINS="-720"
@@ -46,6 +47,9 @@ CF_GQL_MIN_PERIOD=60 # Grab additional overlapping data to cover lag CF data ava
 
 CF_DEFAULT_SINCE_MIN="-10080"
 CF_DEFAULT_UNTIL_MIN="0"
+
+# Threshold in bytes
+INFLUXDB_POST_DATA_SIZE_THRESHOLD=16348
 
 ######################################
 # Define this to be "echo" in ENV to switch off non-observer operations.
@@ -59,7 +63,7 @@ function process_requests_api {
     local count=$(echo "$output" | jq length)
     for i in $(seq -s ' ' 0 $((count-1)))
     do
-      local values=$(echo "$output" | jq .[$i])
+      local values=$(echo "$output" | jq --compact-output .[$i])
       process_request_api "$values"
     done
 }
@@ -129,12 +133,15 @@ bandwidth=$bandwidth"
     done
 
     post_influxdb_data_file "$data_tmp"
+
+    rm -vf "$data_tmp"
 }
 
 #####################################################
 # Processing GraphQL results.
 function process_results_graphql {
     local output="$1"
+    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "req_${TMP_FILE_DATA_TEMPLATE}")"
 
     local keys=$(echo "$output" | jq keys[] | tr -d '"')
     for k in $keys
@@ -142,13 +149,13 @@ function process_results_graphql {
       local count=$(echo "$output" | jq ."$k" | jq length)
       for i in $(seq -s ' ' 0 $((count-1)))
       do
-        local values=$(echo "$output" | jq ."$k"["$i"])
+        local values=$(echo "$output" | jq --compact-output ."$k"["$i"])
         case $k in
           httpRequests1mGroups)
-            process_request_graphql "$values"
+            process_request_graphql "$values" "$data_tmp"
             ;;
           firewallEventsAdaptive)
-            process_firewall_graphql "$values"
+            process_firewall_graphql "$values" "$data_tmp"
             ;;
           loadBalancingRequestsAdaptive)
             ;;
@@ -158,29 +165,35 @@ function process_results_graphql {
         esac
       done
     done
+
+    # Let's post any tail end data.
+    post_influxdb_data_file "$data_tmp" 0
+    # Clean up tmp file
+    rm -vf "$data_tmp"
 }
 
 function process_request_graphql {
     local output="$1"
-    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "req_${TMP_FILE_DATA_TEMPLATE}")"
+    local data_tmp="$2"
+    local output_sum=$(echo "$output" | jq --compact-output ".sum")
 
     ## Requests
-    cfRequestsAll=$(echo "$output" | jq --raw-output ".sum.requests")
-    cfRequestsCached=$(echo "$output" | jq --raw-output ".sum.cachedRequests")
+    cfRequestsAll=$(echo "$output_sum" | jq --raw-output ".requests")
+    cfRequestsCached=$(echo "$output_sum" | jq --raw-output ".cachedRequests")
     cfRequestsUncached=$((cfRequestsAll-cfRequestsCached))
-    cfRequestsEncrypt=$(echo "$output" | jq --raw-output ".sum.encryptedRequests")
+    cfRequestsEncrypt=$(echo "$output_sum" | jq --raw-output ".encryptedRequests")
 
     ## Bandwidth
-    cfBandwidthAll=$(echo "$output" | jq --raw-output ".sum.bytes")
-    cfBandwidthCached=$(echo "$output" | jq --raw-output ".sum.cachedBytes")
+    cfBandwidthAll=$(echo "$output_sum" | jq --raw-output ".bytes")
+    cfBandwidthCached=$(echo "$output_sum" | jq --raw-output ".cachedBytes")
     cfBandwidthUncached=$((cfBandwidthAll-cfBandwidthCached))
-    cfbandwidthEncrypt=$(echo "$output" | jq --raw-output ".sum.encryptedBytes")
+    cfbandwidthEncrypt=$(echo "$output_sum" | jq --raw-output ".encryptedBytes")
 
     ## Threats
-    cfThreatsAll=$(echo "$output" | jq --raw-output ".sum.threats")
+    cfThreatsAll=$(echo "$output_sum" | jq --raw-output ".threats")
 
     ## Pageviews
-    cfPageviewsAll=$(echo "$output" | jq --raw-output ".sum.pageViews")
+    cfPageviewsAll=$(echo "$output_sum" | jq --raw-output ".pageViews")
 
     ## Unique visits
     cfUniquesAll=$(echo "$output" | jq --raw-output ".uniq.uniques")
@@ -209,13 +222,14 @@ cfUniquesAll=$cfUniquesAll"
     echo "$series_name,$tags $data_points $cfTimeStamp" >> "$data_tmp"
 
     ## Per Country
-    local count=$(echo "$output" | jq --raw-output ".sum.countryMap" | jq length)
+    local count=$(echo "$output_sum" | jq --raw-output '".countryMap" | length')
     for c in $(seq -s ' ' 0 $((count-1)))
     do
-      country=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].clientCountryName // \"0\"")
-      visits=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].requests // \"0\"")
-      threats=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].threats // \"0\"")
-      bandwidth=$(echo "$output" | jq --raw-output ".sum.countryMap[$c].bytes // \"0\"")
+      local output_sum_country=$(echo "$output_sum" | jq --compact-output ".countryMap[$c]")
+      country=$(echo "$output_sum_country" | jq --raw-output ".clientCountryName // \"0\"")
+      visits=$(echo "$output_sum_country" | jq --raw-output ".requests // \"0\"")
+      threats=$(echo "$output_sum_country" | jq --raw-output ".threats // \"0\"")
+      bandwidth=$(echo "$output_sum_country" | jq --raw-output ".bytes // \"0\"")
 
 # The alignment here is important (DO NOT INDENT)
       series_name="cloudflare_analytics_country"
@@ -234,7 +248,7 @@ bandwidth=$bandwidth"
 
 function process_firewall_graphql {
     local output="$1"
-    local data_tmp="$(mktemp -p "${TMP_DIR}" -t "fw_${TMP_FILE_DATA_TEMPLATE}")"
+    local data_tmp="$2"
 
     cfAction=$(echo "$output" | jq --raw-output ".action")
     cfClientAsn=$(echo "$output" | jq --raw-output ".clientAsn")
@@ -268,10 +282,23 @@ cfUserAgent=\"$cfUserAgent\""
     post_influxdb_data_file "$data_tmp"
 }
 
+function check_file_size {
+    local file=$1
+    local min_size=$2
+    local act_size=$(wc -c <"$file")
+
+    if [ $act_size -ge $min_size ]; then
+        return 1
+    fi
+}
+
 #####################################################
 # Post to influxDB
 function post_influxdb_data_file {
-    local data_file=${1:-data_tmp}
+    local data_file=$1
+    local threshold=${2:-$INFLUXDB_POST_DATA_SIZE_THRESHOLD}
+
+    check_file_size "$data_file" "$threshold" && return 0
 
     ${ECHO} curl -XPOST "$InfluxDBURL:$InfluxDBPort/write?precision=s&db=$InfluxDB" \
         --user "$InfluxDBUser:$InfluxDBPassword" \
@@ -279,7 +306,7 @@ function post_influxdb_data_file {
         2>&1 --silent
 
     # Clean up tmp file
-    rm -f "${data_file}"
+    echo -n "" > "$data_file"
 }
 
 #####################################################
@@ -304,7 +331,7 @@ function fetch_request_data_api {
           --header "Accept:application/json" \
           --header "Authorization:Bearer $cloudflareapikey" \
           --insecure \
-          2>&1 --silent | jq --raw-output ".result.timeseries" )
+          2>&1 --silent | jq --compact-output ".result.timeseries" )
     process_requests_api "$output"
 }
 
@@ -485,7 +512,7 @@ function make_graphql_post {
          --header "Authorization:Bearer $cloudflareapikey" \
          --insecure \
          --data "$(echo $payload)" \
-        2>&1 --silent | jq .data.viewer.zones[0])
+        2>&1 --silent | jq --compact-output .data.viewer.zones[0])
     process_results_graphql "$output"
 }
 
@@ -507,10 +534,21 @@ function get_last_mins {
     echo $last_mins
 }
 
+function check_running {
+  if [ -e "${TMP_FILE_LOCK}" ]; then
+    echo "Already running"
+    return 1
+  fi
+  echo "$$" > "${TMP_FILE_LOCK}"
+}
+
 #####################################################
 # MAIN FUNCTION
 #
 mkdir -p "${TMP_DIR}"
+
+check_running || exit 1
+echo "Running"
 
 #fetch_request_data_api "-59" "0"
 #fetch_request_data_api "-419" "-60"
@@ -521,3 +559,7 @@ since_mins="$(get_last_mins)"
 fetch_request_data_graphql "$since_mins"
 fetch_fw_data_graphql "$since_mins"
 #fetch_lb_data_graphql "$since_mins"
+
+# Clear the lock file
+rm -v "${TMP_FILE_LOCK}"
+exit 0
