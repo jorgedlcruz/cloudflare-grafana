@@ -14,13 +14,13 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "6.6.2"
+      "version": "7.4.1"
     },
     {
       "type": "panel",
       "id": "grafana-worldmap-panel",
       "name": "Worldmap Panel",
-      "version": "0.2.1"
+      "version": "0.3.2"
     },
     {
       "type": "panel",
@@ -60,15 +60,35 @@
       }
     ]
   },
-  "description": "Grafana Dashboard for Cloudflare Analytics and Overview",
+  "description": "Grafana Dashboard for Cloudflare - Pulls out all the Cloudflare Information, and Analytics from the RESTful API.",
   "editable": true,
-  "gnetId": null,
+  "gnetId": 12167,
   "graphTooltip": 0,
   "id": null,
   "links": [],
   "panels": [
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -77,32 +97,21 @@
       },
       "id": 4,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -148,6 +157,27 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -156,33 +186,21 @@
       },
       "id": 5,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -228,6 +246,26 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -236,32 +274,21 @@
       },
       "id": 6,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -307,6 +334,27 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -315,33 +363,21 @@
       },
       "id": 7,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -387,6 +423,34 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 5
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -396,39 +460,20 @@
       "id": 13,
       "options": {
         "colorMode": "background",
-        "fieldOptions": {
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
           "calcs": [
             "sum"
           ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                },
-                {
-                  "color": "#EAB839",
-                  "value": 5
-                },
-                {
-                  "color": "semi-dark-red",
-                  "value": 10
-                }
-              ]
-            },
-            "unit": "short"
-          },
-          "overrides": [],
+          "fields": "",
           "values": false
         },
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -474,6 +519,26 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -482,32 +547,21 @@
       },
       "id": 14,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -562,6 +616,12 @@
       "datasource": "${DS_INFLUXDB}",
       "decimals": 0,
       "esMetric": "Count",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 20,
         "w": 12,
@@ -572,13 +632,14 @@
       "hideZero": true,
       "id": 2,
       "initialZoom": "2",
+      "interval": "1h",
       "locationData": "countries",
       "mapCenter": "Europe",
       "mapCenterLatitude": 46,
       "mapCenterLongitude": 14,
       "maxDataPoints": 1,
       "mouseWheelZoom": true,
-      "options": {},
+      "pluginVersion": "7.4.1",
       "showLegend": true,
       "stickyLabels": false,
       "tableQueryOptions": {
@@ -611,6 +672,7 @@
               "type": "fill"
             }
           ],
+          "limit": "",
           "measurement": "cloudflare_analytics_country",
           "orderByTime": "ASC",
           "policy": "default",
@@ -638,13 +700,33 @@
       "timeShift": null,
       "title": "Countries Traffic Map",
       "type": "grafana-worldmap-panel",
-      "unitPlural": "",
+      "unitPlural": "requests",
       "unitSingle": "",
-      "unitSingular": "",
-      "valueName": "current"
+      "unitSingular": "request",
+      "valueName": "total"
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 4,
@@ -653,32 +735,21 @@
       },
       "id": 15,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -724,6 +795,26 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 4,
@@ -732,32 +823,21 @@
       },
       "id": 16,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -803,6 +883,26 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 4,
@@ -811,32 +911,21 @@
       },
       "id": 17,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "none"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -882,11 +971,18 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 8,
       "fillGradient": 0,
       "gridPos": {
@@ -897,6 +993,7 @@
       },
       "hiddenSeries": false,
       "id": 8,
+      "interval": null,
       "legend": {
         "avg": false,
         "current": false,
@@ -906,30 +1003,33 @@
         "total": false,
         "values": false
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 0,
       "links": [],
+      "maxDataPoints": null,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": false
       },
       "percentage": false,
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [
         {
+          "$$hashKey": "object:232",
           "alias": "Cached Requests",
           "color": "#1f77b4"
         },
         {
+          "$$hashKey": "object:233",
           "alias": "Uncached Requests",
           "color": "#aec7e8"
         }
       ],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
@@ -937,7 +1037,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -982,7 +1082,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -1024,7 +1124,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
+      "timeFrom": "7d",
       "timeRegions": [],
       "timeShift": null,
       "title": "Requests Through Cloudflare",
@@ -1043,6 +1143,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:246",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1051,6 +1152,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:247",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1066,6 +1168,27 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 4,
@@ -1074,33 +1197,21 @@
       },
       "id": 18,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -1146,6 +1257,27 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 4,
@@ -1154,33 +1286,21 @@
       },
       "id": 19,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -1226,6 +1346,27 @@
     },
     {
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(56, 56, 56)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 4,
@@ -1234,33 +1375,21 @@
       },
       "id": 20,
       "options": {
-        "colorMode": "value",
-        "fieldOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "rgb(56, 56, 56)",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "decbytes"
-          },
-          "overrides": [],
-          "values": false
-        },
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
-        "orientation": "auto"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -1306,11 +1435,18 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 8,
       "fillGradient": 0,
       "gridPos": {
@@ -1330,30 +1466,32 @@
         "total": false,
         "values": false
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 0,
       "links": [],
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "6.6.2",
+      "pluginVersion": "7.4.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [
         {
+          "$$hashKey": "object:398",
           "alias": "Cached Bandwidth",
           "color": "#1f77b4"
         },
         {
+          "$$hashKey": "object:399",
           "alias": "Uncached Bandwidth",
           "color": "#aec7e8"
         }
       ],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
@@ -1361,7 +1499,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -1406,7 +1544,7 @@
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1d"
               ],
               "type": "time"
             },
@@ -1448,7 +1586,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
+      "timeFrom": "7d",
       "timeRegions": [],
       "timeShift": null,
       "title": "Bandwidth",
@@ -1467,6 +1605,7 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:412",
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -1475,6 +1614,7 @@
           "show": true
         },
         {
+          "$$hashKey": "object:413",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1489,8 +1629,13 @@
       }
     },
     {
-      "content": "<a href=\"https://www.jorgedelacruz.es\"><img src=\"https://www.jorgedelacruz.es/wp-content/uploads/2019/04/jorgedelacruz-banner_2efede4ef704c939e63a3763231f5961.png\"></a>\n\n\n\n",
       "datasource": "${DS_INFLUXDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 3,
         "w": 5,
@@ -1498,8 +1643,11 @@
         "y": 21
       },
       "id": 22,
-      "mode": "html",
-      "options": {},
+      "options": {
+        "content": "<a href=\"https://www.jorgedelacruz.es\"><img src=\"https://www.jorgedelacruz.es/wp-content/uploads/2019/04/jorgedelacruz-banner_2efede4ef704c939e63a3763231f5961.png\"></a>\n\n\n\n",
+        "mode": "html"
+      },
+      "pluginVersion": "7.4.1",
       "targets": [
         {
           "groupBy": [
@@ -1545,7 +1693,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 22,
+  "schemaVersion": 27,
   "style": "dark",
   "tags": [
     "cloudflare"
@@ -1554,7 +1702,7 @@
     "list": []
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {
@@ -1574,5 +1722,5 @@
   "timezone": "",
   "title": "Grafana Dashboard for Cloudflare Analytics and Overview",
   "uid": "iFcf4yqZk",
-  "version": 12
+  "version": 7
 }
