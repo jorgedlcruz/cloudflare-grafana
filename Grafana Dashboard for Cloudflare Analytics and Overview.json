@@ -60,7 +60,7 @@
       }
     ]
   },
-  "description": "Grafana Dashboard for Cloudflare - Pulls out all the Cloudflare Information, and Analytics from the RESTful API.",
+  "description": "Grafana Dashboard for Cloudflare - Pulls out all the Cloudflare Information, and Analytics from the GraphQL API.",
   "editable": true,
   "gnetId": 12167,
   "graphTooltip": 0,
@@ -103,7 +103,7 @@
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -192,7 +192,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -280,7 +280,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -369,7 +369,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -553,7 +553,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "sum"
           ],
           "fields": "",
           "values": false
@@ -1722,5 +1722,5 @@
   "timezone": "",
   "title": "Grafana Dashboard for Cloudflare Analytics and Overview",
   "uid": "iFcf4yqZk",
-  "version": 7
+  "version": 9
 }
