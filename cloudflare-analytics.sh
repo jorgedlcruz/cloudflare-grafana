@@ -27,6 +27,7 @@ InfluxDBUser="USER" #User for Database
 InfluxDBPassword="PASSWORD" #Password for Database
 
 # Endpoint URL for login action
+cloudflareauthmethod="TOKEN/APIKEY" #Choose Authentication method. Either TOKEN (single token with specific rights) or APIKEY (Global API KEY with Email)
 cloudflareapikey="YOURAPIKEY"
 cloudflarezone="YOURZONEID"
 cloudflareemail="YOUREMAIL"
@@ -105,7 +106,19 @@ PAYLOAD="$PAYLOAD
 ##
 # Cloudflare Analytics. This part will check on your Cloudflare Analytics, extracting the data from the last 24 hours
 ##
+## URL with API email and key
+case $cloudflareauthmethod in
+        APIKEY)
 cloudflareUrl=$(curl -s -X POST -H "Content-Type: application/json" -H "X-Auth-Email: $cloudflareemail" -H  "X-Auth-Key: $cloudflareapikey" --data "$(echo $PAYLOAD)" https://api.cloudflare.com/client/v4/graphql/ 2>&1 -k --silent)
+;;
+## URL with API Token
+        TOKEN)
+cloudflareUrl=$(curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $cloudflareapitoken" --data "$(echo $PAYLOAD)" https://api.cloudflare.com/client/v4/graphql/ 2>&1 -k --silent)
+;;
+        *)
+        echo "No or Wrong Input in Config for 'cloudflareauthmethod'. Current value is $cloudflareauthmethod"
+;;
+esac
 
     declare -i arraydays=0
     for requests in $(echo "$cloudflareUrl" | jq -r '.data.viewer.zones[0].httpRequests1dGroups[].sum.requests'); do
